@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ── Map point ripple animations ── */
+
+.ripple-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ripple-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--ripple-color);
+  width: 0;
+  height: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: ripple-expand 2.4s ease-out forwards;
+}
+
+.ripple-ring-1 {
+  animation-delay: 0s;
+}
+.ripple-ring-2 {
+  animation-delay: 0.4s;
+}
+.ripple-ring-3 {
+  animation-delay: 0.8s;
+}
+
+@keyframes ripple-expand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.85;
+  }
+  100% {
+    width: var(--ripple-size);
+    height: var(--ripple-size);
+    opacity: 0;
+  }
+}
+
+.ripple-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--dot-size);
+  height: var(--dot-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--ripple-color);
+  box-shadow: none;
+  animation:
+    dot-appear 0.5s ease-out forwards,
+    dot-desaturate 8s ease-in 2s forwards;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+@keyframes dot-appear {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes dot-desaturate {
+  0% {
+    background: var(--ripple-color);
+    box-shadow: none;
+    opacity: 1;
+  }
+  100% {
+    background: #86efac;
+    box-shadow: 0 0 6px 2px #86efac;
+    opacity: 0.7;
+  }
+}
