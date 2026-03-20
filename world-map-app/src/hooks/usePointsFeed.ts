@@ -22,7 +22,7 @@ export function usePointsFeed(speed: number = 1) {
     es.onmessage = (event) => {
       const raw = JSON.parse(event.data);
       const point: MapPoint = { ...raw, id: nextId++ };
-      setPoints((prev) => [...prev, point]);
+      setPoints((prev) => [...prev.slice(-99), point]);
     };
 
     es.onerror = () => es.close();

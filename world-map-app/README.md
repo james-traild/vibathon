@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Traild Live Invoices Heatmap
 
-## Getting Started
+An interactive real-time world map that visualizes invoice transactions streaming across global financial centers.
 
-First, run the development server:
+### Tech Stack
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Leaflet** / **React-Leaflet** for the interactive map
+- **Tailwind CSS 4** for styling
+- **Server-Sent Events (SSE)** for real-time data streaming
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Live Data Feed** — A mock SSE endpoint (src/app/api/feed/route.ts) continuously generates invoice data points weighted towards G10 nations and major financial hubs (New York, London, Tokyo, Frankfurt, Paris, etc.) with a sprinkling of other global cities. Each point carries a lat/lng and a currency value between $100–$1M.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Animated Map Markers** — Points appear with a water-drop ripple animation that scales with transaction value. Ripple rings expand outward in waves, then the dot fades from its value-coded color to a soft green. Colors range from cyan (<$100K) through purple, yellow, and orange to red (>$750K).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Statistics Pill** — A floating overlay at the top of the map shows the current date, user timezone, running currency total, and invoice count — all updating live.
 
-## Learn More
+**Dark Mode** — System-preference-aware with a manual toggle. The map tiles swap between OpenStreetMap (light) and CartoDB Dark Matter (dark).
 
-To learn more about Next.js, take a look at the following resources:
+**Speed Control** — A 1×/10× toggle in the header for UAT/demo purposes, which adjusts the SSE interval server-side.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Performance** — A rolling 100-point buffer ensures the map stays responsive. Icons are cached per-point so existing markers don't re-animate when new ones arrive.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Architecture
+- src/hooks/usePointsFeed.ts — SSE client hook shared between map and stats
+- src/components/WorldMap.tsx — Leaflet map with ripple markers and dark-tile swapping
+- src/components/StatsPill.tsx — Live stats overlay
+- src/components/ThemeProvider.tsx — Context-based light/dark theme with localStorage persistence
+- src/app/globals.css — Ripple keyframe animations driven by CSS custom properties
