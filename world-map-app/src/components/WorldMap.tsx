@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-interface MapPoint {
-  lat: number;
-  lng: number;
-  value: number;
-  id: number;
-}
+import type { MapPoint } from "@/hooks/usePointsFeed";
 
 function formatCurrency(value: number): string {
   return "$" + value.toLocaleString("en-US");
@@ -93,25 +87,15 @@ function DarkTileSwapper() {
   return null;
 }
 
-let nextId = 0;
-
-export default function WorldMap() {
-  const [points, setPoints] = useState<MapPoint[]>([]);
+export default function WorldMap({ points }: { points: MapPoint[] }) {
   const iconsRef = useRef<Map<number, L.DivIcon>>(new Map());
 
-  useEffect(() => {
-    const es = new EventSource("/api/feed");
-
-    es.onmessage = (event) => {
-      const raw = JSON.parse(event.data);
-      const point: MapPoint = { ...raw, id: nextId++ };
-      iconsRef.current.set(point.id, createIcon(point.value));
-      setPoints((prev) => [...prev, point]);
-    };
-
-    es.onerror = () => es.close();
-    return () => es.close();
-  }, []);
+  // Create icons for new points only
+  for (const p of points) {
+    if (!iconsRef.current.has(p.id)) {
+      iconsRef.current.set(p.id, createIcon(p.value));
+    }
+  }
 
   return (
     <MapContainer
@@ -137,10 +121,6 @@ export default function WorldMap() {
               <strong style={{ fontSize: "1.1rem" }}>
                 {formatCurrency(point.value)}
               </strong>
-              <br />
-              <span style={{ fontSize: "0.75rem", color: "#888" }}>
-                {point.lat.toFixed(4)}, {point.lng.toFixed(4)}
-              </span>
             </div>
           </Popup>
         </Marker>
